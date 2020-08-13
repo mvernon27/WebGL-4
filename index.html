@@ -1,0 +1,240 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL-4</title>
+</head>
+<style>
+    body { margin: 0; }
+    canvas { display: block; }
+</style>
+<body>
+    
+</body>
+<script src="three.js"></script>
+<script>
+    let array = [], clo, mouse, raycaster, objects=[], scene, camera, directionalLight, renderer, mesh, loader, point, points, pointCloud, pointMaterial,C=[],P=[],B=[], E=[], W=[], A=[], v = [];
+    function init(){
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color('black');
+        camera = new THREE.PerspectiveCamera();
+        camera.position.z = 25;
+        directionalLight = new THREE.DirectionalLight(0xffffff);
+
+		renderer = new THREE.WebGLRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+
+        raycaster = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+        raycaster.params.PointCloud.threshold = .85;
+
+        pointMaterial = new THREE.PointsMaterial(
+            {
+                size: .05,
+                color: 'rgb(87, 67, 202)',
+                transparent: true,
+                opacity: 1
+            }
+        )
+
+            function Draw(P,intensity, v1, v2)
+            {
+                for (var i = 0; i < intensity; i++){
+                    var diffX = Math.abs(P.vertices[v1].x - P.vertices[v2].x);
+                    var spacingX = diffX/intensity;
+                    if(P.vertices[v1].x-P.vertices[v2].x > 0){spacingX=spacingX*-1}
+
+                    var diffY = Math.abs(P.vertices[v1].y - P.vertices[v2].y);
+                    var spacingY = diffY/intensity;
+                    if(P.vertices[v1].y-P.vertices[v2].y > 0){spacingY=spacingY*-1}
+
+                    var diffZ = Math.abs(P.vertices[v1].z - P.vertices[v2].z);
+                    var spacingZ = diffZ/intensity;
+                    if(P.vertices[v1].z-P.vertices[v2].z > 0){spacingZ=spacingZ*-1}
+
+                    var p = new THREE.Vector3(
+                        P.vertices[v1].x+spacingX*i,
+                        P.vertices[v1].y+spacingY*i,
+                        P.vertices[v1].z+spacingZ*i
+                    )
+                    p.isIntersected = {};
+                    p.isIntersected = false;
+
+                    P.vertices.push(p)
+                }
+            }
+
+            function Letter(letter,int) {
+                var l = new THREE.Geometry();
+                for(var i = 0; i < letter.length; i++){
+                    l.vertices.push(letter[i])
+                }
+                var temp = l.vertices.length;
+                for(var u = 0; u < temp-1; u++){
+                    Draw(l,int,u,u+1)
+                }
+                return l;
+            }
+
+            function Word(c, letters){
+                var obj = new THREE.Geometry();
+                var t = letters.length
+                for (var i = 0; i < t; i++){
+                    l = Letter(letters[i],c);
+                        for (var k = 0; k < l.vertices.length; k++)
+                        {
+                            l.vertices[k].x += (2.5*i);
+                            l.vertices[k].iX = l.vertices[k].x
+                            l.vertices[k].iY = l.vertices[k].y
+                            l.vertices[k].iZ = l.vertices[k].z
+                            obj.vertices.push(l.vertices[k])
+                        }
+                }
+                return obj;
+            }
+            A.push(
+                new THREE.Vector3(-1,-1,0),
+                new THREE.Vector3(0,1,0),
+                new THREE.Vector3(1,-1,0),
+                new THREE.Vector3(0.5,0,0),
+                new THREE.Vector3(-.5,0,0),
+            )
+            B.push(
+                new THREE.Vector3(-1,-1,0),
+                new THREE.Vector3(-1,1,0),
+                new THREE.Vector3(.6,1,0),
+                new THREE.Vector3(.875,.875,0),
+                new THREE.Vector3(1,.5,0),
+                new THREE.Vector3(.875,.125,0),
+                new THREE.Vector3(.6,0,0),
+                new THREE.Vector3(-1,0,0),
+                new THREE.Vector3(.6,0,0),
+                new THREE.Vector3(.875,-.125,0),
+                new THREE.Vector3(1,-.5,0),
+                new THREE.Vector3(.875,-.875,0),
+                new THREE.Vector3(.6,-1,0),
+                new THREE.Vector3(-1,-1,0)
+            )
+            C.push(
+                new THREE.Vector3(1,.5,0),
+                new THREE.Vector3(.875,.75,0),
+                new THREE.Vector3(.75,1,0),
+                new THREE.Vector3(-.65,1,0),
+                new THREE.Vector3(-.875,.75,0),
+                new THREE.Vector3(-1,0,0),
+                new THREE.Vector3(-.875,-.75,0),
+                new THREE.Vector3(-.65,-1,0),
+                new THREE.Vector3(.75,-1,0),
+                new THREE.Vector3(.875,-.75,0),
+                new THREE.Vector3(1,-.5,0),
+
+
+
+            )
+            P.push(
+                new THREE.Vector3(-1,-1,0),
+                new THREE.Vector3(-1,1,0),
+                new THREE.Vector3(.75,1,0),
+                new THREE.Vector3(.875,.875,0),
+                new THREE.Vector3(1,.5,0),
+                new THREE.Vector3(.875,.125,0),
+                new THREE.Vector3(.75,0,0),
+                new THREE.Vector3(-1,0,0),
+
+
+            )
+            W.push(
+                new THREE.Vector3(-1,1,0),
+                new THREE.Vector3(-.5,-1,0),
+                new THREE.Vector3(0,.5,0),
+                new THREE.Vector3(.5,-1,0),
+                new THREE.Vector3(1,1,0)
+            )
+
+            E.push(
+                new THREE.Vector3(1,1,0),
+                new THREE.Vector3(-1,1,0),
+                new THREE.Vector3(-1,0,0),
+                new THREE.Vector3(.5,0,0),
+                new THREE.Vector3(-1,0,0),
+                new THREE.Vector3(-1,-1,0),
+                new THREE.Vector3(1,-1,0)
+            )
+            
+            array.push(A,B,C,E,P,W);
+            console.log(array)
+             clo = new THREE.Points(Word(200, array),pointMaterial);
+             clo.position.x += -5;
+    
+    scene.add(clo)
+    }
+
+    function onMouseMove( event ) {
+                event.preventDefault();
+	            mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+                var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+                vector.unproject( camera );
+	            var dir = vector.sub( camera.position ).normalize();
+	            var distance = - camera.position.z / dir.z;
+                var pos = camera.position.clone().add( dir.multiplyScalar( distance ) );
+                raycaster.setFromCamera( mouse, camera );
+    }
+    window.addEventListener( 'mousemove', onMouseMove, false );
+
+    function render() {
+        renderer.render( scene, camera );
+    }
+
+    function animate() {
+        function getRandom(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
+                var intersects = raycaster.intersectObjects(scene.children)
+                for (var i = 0; i < intersects.length; i++)
+                {
+                var index = intersects[i].index;
+                    intersects[i].object.geometry.vertices[index].x += getRandom(-.3,.3);
+                    intersects[i].object.geometry.vertices[index].y += getRandom(-.3,.3);
+                    intersects[i].object.geometry.vertices[index].z += getRandom(0,0);
+
+                    intersects[i].object.geometry.verticesNeedUpdate = true;
+                    intersects[i].object.geometry.vertices[index].isIntersected = true;
+                }
+                for (var i = 0; i < clo.geometry.vertices.length; i++)
+                {
+   
+                    if ( clo.geometry.vertices[i].x > clo.geometry.vertices[i].iX)
+                    {
+                        clo.geometry.vertices[i].x -= .01;
+                        clo.geometry.verticesNeedUpdate = true;
+                    }
+                    if ( clo.geometry.vertices[i].x < clo.geometry.vertices[i].iX)
+                    {
+                        clo.geometry.vertices[i].x += .01;
+                        clo.geometry.verticesNeedUpdate = true;
+                    }
+                    if ( clo.geometry.vertices[i].y > clo.geometry.vertices[i].iY)
+                    {
+                        clo.geometry.vertices[i].y -= .01;
+                        clo.geometry.verticesNeedUpdate = true;
+                    }
+                    if ( clo.geometry.vertices[i].y < clo.geometry.vertices[i].iY)
+                    {
+                        clo.geometry.vertices[i].y += .01;
+                        clo.geometry.verticesNeedUpdate = true;
+                    }
+
+                }
+        requestAnimationFrame(render)
+        requestAnimationFrame(animate)
+    }
+    console.log(clo)
+    init();
+    render();
+    setTimeout(animate,500)
+ </script>
+</html>
